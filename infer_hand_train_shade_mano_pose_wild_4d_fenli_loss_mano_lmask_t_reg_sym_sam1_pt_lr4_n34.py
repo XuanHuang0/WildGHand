@@ -357,9 +357,7 @@ class TGS(torch.nn.Module, SaverMixin):
         print(self.t_pointclouds.shape)
 
         mesh_v_r = trimesh.Trimesh(vertices=t_smpl_output_r.vertices[0].clone().detach().cpu().numpy(), faces=face_r, process=False)
-        # mesh_v_r.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'r.obj')
         mesh_v_l = trimesh.Trimesh(vertices=t_smpl_output_r.vertices[0].clone().detach().cpu().numpy(), faces=face_r, process=False)
-        # mesh_v_l.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'l.obj')
         mesh_v = concat_meshes([mesh_v_r, mesh_v_l])
 
         vertex_num_upsampled = self.t_pointclouds.shape[1]
@@ -753,21 +751,13 @@ class TGS(torch.nn.Module, SaverMixin):
         pointclouds = torch.cat([verts_w_right + mano_trans[:,0:1,:], verts_w_left + mano_trans[:,1:2,:]],dim=1)
 
         
-        # mesh_v_r = trimesh.Trimesh(vertices=(verts_w_right + mano_trans[:,0:1,:])[0].clone().detach().cpu().numpy(), faces=face_r, process=False)
-        # mesh_v_r.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'r.obj')
-        # mesh_v_l = trimesh.Trimesh(vertices=(verts_w_left + mano_trans[:,1:2,:])[0].clone().detach().cpu().numpy(), faces=face_l, process=False)
-        # mesh_v_l.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'l.obj')
-        # mesh_v = concat_meshes([mesh_v_r, mesh_v_l])
-        # mesh_v.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'.obj')
+        # Optional debug export for reconstructed meshes can be added here if needed.
 
         mano_msks=[]
         for b in range(batch_size):
             mesh_v_r = trimesh.Trimesh(vertices=(verts_w_right + mano_trans[:,0:1,:])[b].clone().detach().cpu().numpy(), faces=face_r, process=False)
-            # mesh_v_r.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'r.obj')
             mesh_v_l = trimesh.Trimesh(vertices=(verts_w_left + mano_trans[:,1:2,:])[b].clone().detach().cpu().numpy(), faces=face_r, process=False)
-            # mesh_v_l.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'l.obj')
             mesh_v = concat_meshes([mesh_v_r, mesh_v_l])
-            # mesh_v.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'.obj')
             mano_msk=render_img(torch.from_numpy(mesh_v.vertices).float(), torch.from_numpy(mesh_v.faces), tar_cam['input_R'][b:b+1,...].float(), tar_cam['input_T'][b:b+1,...].float(), tar_cam['input_focal'][b:b+1,0].float(), tar_cam['input_focal'][b:b+1,1].float(), tar_cam['input_princpt'][b:b+1,0].float(), tar_cam['input_princpt'][b:b+1,1].float(), device=pointclouds.device)
             mano_msks.append(mano_msk.unsqueeze(0))
         mano_msk=torch.cat(mano_msks,0)
@@ -935,10 +925,6 @@ class HandLightningModule(pytorch_lightning.LightningModule):
             else:
                 print("all trainable")
         # self.load_state_dict(pretrained_model['state_dict'])
-        # self.pretrained_path = '/home/huangx/TriplaneGaussian-main/EXPERIMENTS/tgs_new_64_9w_texture_identity_map_valid_inter_attn_points_sp_c0_train_all/ckpts/6e_all.ckpt'
-        # pretrained_model = torch.load(self.pretrained_path)
-        # # print(pretrained_model['state_dict'].keys())
-        # self.load_state_dict(pretrained_model['state_dict'], strict=False)
 
     def configure_optimizers(self):
         opt_g=torch.optim.Adam(self.model.parameters(), lr=self.cfg['training'].get('lr', 1e-4))
@@ -1407,11 +1393,7 @@ class HandLightningModule(pytorch_lightning.LightningModule):
     #     msk_pred = out["alpha_fine"][0].permute(1, 2, 0).detach().cpu().numpy()*255
     #     msk_gt = out["tar_alpha"][0].permute(1, 2, 0).detach().cpu().numpy()*255
 
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/rgb_pred"+str(batch_idx)+".jpg", rgb_pred[...,[2,1,0]])
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/rgb_gt"+str(batch_idx)+".jpg", rgb_gt[...,[2,1,0]])
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/rgb_input"+str(batch_idx)+".jpg", rgb_input[...,[2,1,0]])
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/msk_pred"+str(batch_idx)+".jpg", msk_pred)
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/msk_gt"+str(batch_idx)+".jpg", msk_gt)
+    #     # Debug image dumps can be added here if needed.
         
     #     # print(out['tar_img'].shape)
     #     loss, err_dict = compute_error(out_nerf=out, vggloss=self.vgg_loss, lambdas=lambdas)

@@ -357,9 +357,7 @@ class TGS(torch.nn.Module, SaverMixin):
         print(self.t_pointclouds.shape)
 
         mesh_v_r = trimesh.Trimesh(vertices=t_smpl_output_r.vertices[0].clone().detach().cpu().numpy(), faces=face_r, process=False)
-        # mesh_v_r.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'r.obj')
         mesh_v_l = trimesh.Trimesh(vertices=t_smpl_output_r.vertices[0].clone().detach().cpu().numpy(), faces=face_r, process=False)
-        # mesh_v_l.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'l.obj')
         # mesh_v = concat_meshes([mesh_v_r, mesh_v_l])
         mesh_v = mesh_v_r
 
@@ -766,23 +764,14 @@ class TGS(torch.nn.Module, SaverMixin):
         # pointclouds = torch.cat([verts_w_right + mano_trans[:,0:1,:], verts_w_left + mano_trans[:,1:2,:]],dim=1)
         pointclouds = verts_w_right + mano_trans[:,0:1,:]
 
-        # mesh_v_r = trimesh.Trimesh(vertices=(verts_w_right + mano_trans[:,0:1,:])[0].clone().detach().cpu().numpy(), faces=face_r, process=False)
-        # mesh_v_r.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'r.obj')
-        # mesh_v_l = trimesh.Trimesh(vertices=(verts_w_left + mano_trans[:,1:2,:])[0].clone().detach().cpu().numpy(), faces=face_l, process=False)
-        # mesh_v_l.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'l.obj')
-        # mesh_v = concat_meshes([mesh_v_r, mesh_v_l])
-        # mesh_v.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'.obj')
+        # Optional debug export for reconstructed meshes can be added here if needed.
 
         mano_msks=[]
         for b in range(batch_size):
             mesh_v_r = trimesh.Trimesh(vertices=(verts_w_right + mano_trans[:,0:1,:])[b].clone().detach().cpu().numpy(), faces=face_r, process=False)
-            # mesh_v_r.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'r.obj')
             mesh_v_l = trimesh.Trimesh(vertices=(verts_w_left + mano_trans[:,1:2,:])[b].clone().detach().cpu().numpy(), faces=face_r, process=False)
-            # mesh_v_l.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'l.obj')
             # mesh_v = concat_meshes([mesh_v_r, mesh_v_l])
             mesh_v = mesh_v_r
-
-            # mesh_v.export('/home/huangx/TriplaneGaussian_online/mesh_wild/mesh_texture'+str(frame_idx[0])+'.obj')
             mano_msk=render_img(torch.from_numpy(mesh_v.vertices).float(), torch.from_numpy(mesh_v.faces), tar_cam['input_R'][b:b+1,...].float(), tar_cam['input_T'][b:b+1,...].float(), tar_cam['input_focal'][b:b+1,0].float(), tar_cam['input_focal'][b:b+1,1].float(), tar_cam['input_princpt'][b:b+1,0].float(), tar_cam['input_princpt'][b:b+1,1].float(), device=pointclouds.device)
             mano_msks.append(mano_msk.unsqueeze(0))
         mano_msk=torch.cat(mano_msks,0)
