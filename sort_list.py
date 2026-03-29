@@ -10,11 +10,11 @@ from pycocotools.coco import COCO
 import cv2
 import re
 
+PROJECT_ROOT = osp.dirname(osp.abspath(__file__))
 
 if __name__ == "__main__": 
 
-    wild_path = '/home/huangx/OmniHands-main/demo_out/magic3/output.pkl'
-    # wild_path = '/home/huangx/OmniHands-main/demo_out/Video/output.pkl'
+    wild_path = osp.join(PROJECT_ROOT, 'dataset', 'WildGHand', 'capture0_subsample3_single', 'output.pkl')
 
     with open(wild_path, 'rb') as file:
         data_wild_video = pickle.load(file)

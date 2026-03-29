@@ -2,11 +2,11 @@
 
 WildGHand is a research codebase for wild hand reconstruction and training experiments built around MANO, triplane features, and Gaussian-splatting-style rendering components.
 
-This repository is being cleaned for open-source release. The code is included here, while large datasets, checkpoints, and downloaded model weights are intentionally excluded from git.
+This repository contains the code only. Large datasets, checkpoints, and downloaded model weights are intentionally excluded from git.
 
 ## Repository Scope
 
-This code release keeps the core training and preprocessing pipeline under `/home/huangx/WildGHand`, including:
+This release keeps the core training and preprocessing pipeline, including:
 
 - training entrypoints
 - dataset preprocessing scripts
@@ -38,6 +38,23 @@ WildGHand/
       ...
 ```
 
+The default configs in this repository point to paths under `dataset/WildGHand/...`.
+
+## Checkpoints And Assets
+
+This repository does not ship the large model files needed for training.
+
+Expected local files:
+
+- `vit_h.pth`: SAM ViT-H checkpoint
+- `checkpoints/0.ckpt`: optional pretrained initialization checkpoint
+
+The code also supports environment variables when you want to keep assets outside the repo:
+
+- `WILDG_HAND_ASSET_ROOT`: root for auxiliary assets such as `InterHand2.6M`, `processed_dataset`, `mano_uv`, and `change`
+- `WILDG_HAND_SAM_CHECKPOINT`: explicit path to the SAM ViT-H checkpoint
+- `WILDG_HAND_PRETRAINED_CKPT`: explicit path to the pretrained training checkpoint
+
 ## Main Entry Points
 
 Single-sequence training example:
@@ -57,11 +74,19 @@ CUDA_VISIBLE_DEVICES='0,1,2,3' python infer_hand_train_shade_mano_pose_wild_4d_f
   --num_gpus 4
 ```
 
+Preprocessing example:
+
+```bash
+python dataset_identity_mano_sam1_wild_process_4d_.py \
+  --input_path dataset/WildGHand/capture10_subsample3/output.pkl
+```
+
 ## Notes
 
-- Several configs and scripts still contain local absolute-path assumptions and should be cleaned further before a polished public release.
 - The project has substantial GPU memory requirements.
 - Dependency versions matter. In particular, older `diffusers` releases may require an older `huggingface_hub` version.
+- Top-level training and preprocessing scripts have been reduced to minimal public examples.
+- Some deeper research code and historical variants may still contain local experimental assumptions and may need additional cleanup if you plan to fully productize the repository.
 
 ## License
 

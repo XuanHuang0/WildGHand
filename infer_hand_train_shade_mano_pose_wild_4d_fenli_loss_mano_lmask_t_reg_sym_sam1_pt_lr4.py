@@ -44,6 +44,9 @@ from smplx.lbs import get_normal_coord_system
 
 from segment_anything import sam_model_registry, SamPredictor, SamAutomaticMaskGenerator
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+ASSET_ROOT = os.environ.get("WILDG_HAND_ASSET_ROOT", PROJECT_ROOT)
+
 class CostTime(object):
     def __init__(self):
         self.t = 0
@@ -277,7 +280,7 @@ class TGS(torch.nn.Module, SaverMixin):
 
 
 
-        vanerf_path="/home/huangx/vanerf"
+        vanerf_path = ASSET_ROOT
         # mano layer
         smplx_path = vanerf_path+'/smplx/models/'
         mano_layer = {'right': smplx.create(smplx_path,'mano', ncomps=45,  use_pca=False, is_rhand=True, flat_hand_mean=False), 'left': smplx.create(smplx_path,'mano', ncomps=45,  use_pca=False, is_rhand=False, flat_hand_mean=False)}
@@ -892,7 +895,10 @@ class HandLightningModule(pytorch_lightning.LightningModule):
         # self.discriminator=Discriminator(image_size=cfg['models']['Discriminator']['params']['image_size'],activation_layer=cfg['models']['Discriminator']['params']['activation_layer'], channel_multiplier=cfg['models']['Discriminator']['params']['channel_multiplier'])
         self.vgg_loss = VGGLoss()
 
-        sam_checkpoint = "/home/huangx/TriplaneGaussian_online/EXPERIMENTS/arxive/sam_vit_h_4b8939.pth"
+        sam_checkpoint = cfg.get(
+            "sam_checkpoint",
+            os.environ.get("WILDG_HAND_SAM_CHECKPOINT", os.path.join(PROJECT_ROOT, "vit_h.pth")),
+        )
         model_type = "vit_h"
         self.sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
         self.mask_generator = SamAutomaticMaskGenerator(self.sam)
@@ -907,10 +913,13 @@ class HandLightningModule(pytorch_lightning.LightningModule):
 
 
         self.evaluator = evaluator.Evaluator()
-        self.pretrained_path = cfg.get("pretrained_path", '/home/huangx/TriplaneGaussian_online/EXPERIMENTS/online_shade_mano_pose_all_fenli_mano/ckpts/0.ckpt')
+        self.pretrained_path = cfg.get(
+            "pretrained_path",
+            os.environ.get("WILDG_HAND_PRETRAINED_CKPT"),
+        )
         print('!!!!!!!!!!!!!!!!!!!!!!')
         print(self.pretrained_path)
-        if self.pretrained_path != "None":
+        if self.pretrained_path not in [None, "None"]:
             pretrained_model = torch.load(self.pretrained_path)
             # print(pretrained_model['state_dict'].keys())
             self.load_state_dict(pretrained_model['state_dict'], strict=False)

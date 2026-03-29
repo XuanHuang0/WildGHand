@@ -3,6 +3,8 @@
     
     "expname":                      "online_shade_mano_pose_wild_time_texture_4d_fenli_loss_mano_sam_res_lmask_magic_t_reg_sym_res1_sam1_vtreg_capture0_lr_c4_x_50_tw_tsp10",
     "test_dst_name":                "eval_t",
+    "sam_checkpoint":               "./vit_h.pth",
+    "asset_root":                   ".",
     "x_threshold":  10.0,
     "y_threshold":  0.3,
     "z_threshold":  1.0,
@@ -13,7 +15,7 @@
         "repose": false,
         "color_jitter": false,
         "wild_path":
-        "/home/huangx/OmniHands-main/demo_out/capture4_subsample4/output.pkl",
+        "dataset/WildGHand/capture4_subsample4/output.pkl",
         "mask_sa": true,
         "render_mask":false,
         "render_all": true,

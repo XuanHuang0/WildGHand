@@ -21,7 +21,9 @@ import scipy.io as sio
 import smplx
 from torchvision import transforms
 import trimesh
-vanerf_path="/home/huangx/vanerf"
+PROJECT_ROOT = osp.dirname(osp.abspath(__file__))
+ASSET_ROOT = os.environ.get("WILDG_HAND_ASSET_ROOT", PROJECT_ROOT)
+vanerf_path = ASSET_ROOT
 # mano layer
 smplx_path = vanerf_path+'/smplx/models/'
 mano_layer = {'right': smplx.create(smplx_path, 'mano', use_pca=False, is_rhand=True), 'left': smplx.create(smplx_path, 'mano', use_pca=False, is_rhand=False)}
@@ -173,7 +175,10 @@ class Dataset(torch.utils.data.Dataset):
         self.aux_cam_intrinsic = []
         self.aux_cam = []
 
-        self.wild_path  = kwargs.get('wild_path', '/home/huangx/OmniHands-main/demo_out/Video/output.pkl')
+        self.wild_path  = kwargs.get(
+            'wild_path',
+            osp.join(PROJECT_ROOT, 'dataset', 'WildGHand', 'capture0_subsample3_single', 'output.pkl'),
+        )
         # with open('/home/huangx/Arbitrary-Hands-3D-Reconstruction-main/demos_outputs/magic_results_0.35/wild.pkl/magic_handwild_0.35.pkl', 'rb') as file:
         if isinstance(self.wild_path, list):
             self.data_wild_video = []
@@ -1317,7 +1322,13 @@ class Dataset(torch.utils.data.Dataset):
 
 
             # aux_img_path = "/home/huangx/processed_dataset/test/aux_cam_img/"+str(int(aux_index))+".jpg"
-            aux_img_path = "/home/huangx/processed_dataset/test/aux_cam_img_nmap/"+str(int(aux_index))+".jpg"
+            aux_img_path = osp.join(
+                vanerf_path,
+                "processed_dataset",
+                "test",
+                "aux_cam_img_nmap",
+                str(int(aux_index)) + ".jpg",
+            )
 
             aux_img = imageio.imread(aux_img_path)
             aux_img = aux_img.astype(np.float32) / 255.
@@ -1333,7 +1344,16 @@ class Dataset(torch.utils.data.Dataset):
             if index == 13:
                 # os.makedirs(osp.join(processed_data_path, split, 'index_identity_os_reg_i'), exist_ok=True)
                 print(self.aux_cam)
-                with open('/home/huangx/processed_dataset/test/aux_cam_img/index_identity_os_reg_i.pkl', 'wb') as file:
+                with open(
+                    osp.join(
+                        vanerf_path,
+                        "processed_dataset",
+                        "test",
+                        "aux_cam_img",
+                        "index_identity_os_reg_i.pkl",
+                    ),
+                    'wb',
+                ) as file:
                     pickle.dump(self.aux_cam, file)
         return out
 
@@ -1448,7 +1468,10 @@ def load_cfg(path):
     return cfg
 
 if __name__ == "__main__":
-    cfg_path = "/home/huangx/TriplaneGaussian_online/online_shade_mano_pose_wild_time_tex_4d_fenli_loss_mano_sam_res_lmask_magic_t_reg_sym_res1_sam1_vtreg_lr_c0_x_50_tw_tsp10_single.json"
+    cfg_path = osp.join(
+        PROJECT_ROOT,
+        "online_shade_mano_pose_wild_time_tex_4d_fenli_loss_mano_sam_res_lmask_magic_t_reg_sym_res1_sam1_vtreg_lr_c0_x_50_tw_tsp10_single.json",
+    )
     cfg = load_cfg(cfg_path)
     dataset = Dataset.from_config(cfg['dataset'], 'train', cfg)
     # dataloader = DataLoader(dataset, num_workers=0, batch_size=1, shuffle=True)

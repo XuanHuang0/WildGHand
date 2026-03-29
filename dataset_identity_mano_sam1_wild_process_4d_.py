@@ -47,7 +47,11 @@ def parse_args():
     parser.add_argument("--input_path", help="Input path.")
     return parser.parse_args()
 
-sam_checkpoint = "/home/huangx/TriplaneGaussian_online/EXPERIMENTS/arxive/sam_vit_h_4b8939.pth"
+PROJECT_ROOT = osp.dirname(osp.abspath(__file__))
+sam_checkpoint = os.environ.get(
+    "WILDG_HAND_SAM_CHECKPOINT",
+    osp.join(PROJECT_ROOT, "vit_h.pth"),
+)
 model_type = "vit_h"
 device='cuda:0'
 
