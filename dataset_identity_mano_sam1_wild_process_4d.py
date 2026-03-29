@@ -438,8 +438,6 @@ if __name__ == "__main__":
     args = parse_args()
 
     wild_path = args.input_path
-    # '/home/huangx/OmniHands-main/demo_out/magic4/output.pkl'
-    # wild_path = '/home/huangx/OmniHands-main/demo_out/Video/output.pkl'
 
     with open(wild_path, 'rb') as file:
         data_wild_video = pickle.load(file)
@@ -492,8 +490,7 @@ if __name__ == "__main__":
         data_wild_video[acount]['mask_sam1_path'] = mask_sam1_path
         data_wild_video[acount]['bbox_inter'] = bbox_inter
     
-        # processed_data_path = '/home/huangx/processed_dataset'
-        # os.makedirs((osp.join(processed_data_path ,'wild','index')), exist_ok=True)
+        # os.makedirs((osp.join(PROJECT_ROOT, 'processed_dataset', 'wild', 'index')), exist_ok=True)
         masks_auto_path = data_wild['img_path'].split('.')[-2]+'_sam1_mask_auto.pkl'
         with open(masks_auto_path, 'wb') as file:
             pickle.dump(masks_auto, file)

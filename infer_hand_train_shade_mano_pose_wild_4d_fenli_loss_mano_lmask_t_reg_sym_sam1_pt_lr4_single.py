@@ -940,10 +940,6 @@ class HandLightningModule(pytorch_lightning.LightningModule):
                 print("all trainable")
         
         # self.load_state_dict(pretrained_model['state_dict'])
-        # self.pretrained_path = '/home/huangx/TriplaneGaussian-main/EXPERIMENTS/tgs_new_64_9w_texture_identity_map_valid_inter_attn_points_sp_c0_train_all/ckpts/6e_all.ckpt'
-        # pretrained_model = torch.load(self.pretrained_path)
-        # # print(pretrained_model['state_dict'].keys())
-        # self.load_state_dict(pretrained_model['state_dict'], strict=False)
 
     def configure_optimizers(self):
         opt_g=torch.optim.Adam(self.model.parameters(), lr=self.cfg['training'].get('lr', 1e-4))
@@ -1419,11 +1415,7 @@ class HandLightningModule(pytorch_lightning.LightningModule):
     #     msk_pred = out["alpha_fine"][0].permute(1, 2, 0).detach().cpu().numpy()*255
     #     msk_gt = out["tar_alpha"][0].permute(1, 2, 0).detach().cpu().numpy()*255
 
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/rgb_pred"+str(batch_idx)+".jpg", rgb_pred[...,[2,1,0]])
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/rgb_gt"+str(batch_idx)+".jpg", rgb_gt[...,[2,1,0]])
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/rgb_input"+str(batch_idx)+".jpg", rgb_input[...,[2,1,0]])
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/msk_pred"+str(batch_idx)+".jpg", msk_pred)
-    #     # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up_val/msk_gt"+str(batch_idx)+".jpg", msk_gt)
+    #     # Debug image dumps can be added here if needed.
         
     #     # print(out['tar_img'].shape)
     #     loss, err_dict = compute_error(out_nerf=out, vggloss=self.vgg_loss, lambdas=lambdas)

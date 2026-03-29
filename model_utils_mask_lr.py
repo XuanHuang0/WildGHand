@@ -422,8 +422,7 @@ def compute_error_nerf(out_nerf, lambdas, vggloss, lap_reg):
         #     nerf_tex_mskd = out_nerf["tex_cal"]
         #     loss_vgg += lambda_vgg * vggloss(nerf_tex_mskd, out_nerf["tar_img"])
             # print(out_nerf["tar_img"].shape)
-            # tar_img2 = out_nerf["tar_img"].squeeze(0).permute(1, 2, 0).detach().cpu().numpy()*255
-            # cv2.imwrite('/home/huangxuan_m2023/VANeRF/ex/tar2.jpg', tar_img2)
+            # tar_img2 = out_nerf["tar_img"].squeeze(0).permute(1, 2, 0).detach().cpu().numpy() * 255
 
         # if "tex_cal_fine" in out_nerf:
         #     nerf_tex_mskd = out_nerf["tex_cal_fine"]
