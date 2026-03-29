@@ -1,0 +1,39 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.so
+
+# Editors and local envs
+.DS_Store
+.idea/
+.vscode/
+.venv/
+venv/
+
+# Experiment outputs and logs
+EXPERIMENTS/
+outputs/
+*.log
+
+# Local datasets
+dataset/
+
+# Large checkpoints and model weights
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# Local model caches / downloaded weights
+facebook/
+tgs/image_encoder/
+segment_anything_2_main/checkpoints/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Misc
+.cache/
