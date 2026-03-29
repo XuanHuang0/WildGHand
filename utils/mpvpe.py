@@ -37,8 +37,15 @@ def compute_mpvpe(folder_gt, folder_pred):
 
 
 if __name__ == "__main__":
-    folder_gt = "/home/huangx/TriplaneGaussian_online/mesh_gt"       # 替换为你的 ground truth mesh 文件夹路径
-    folder_pred = "/home/huangx/TriplaneGaussian_online/mesh_handy"   # 替换为你的 prediction mesh 文件夹路径
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    folder_gt = os.environ.get(
+        "WILDG_HAND_MPVPE_GT",
+        os.path.join(project_root, "mesh_gt"),
+    )
+    folder_pred = os.environ.get(
+        "WILDG_HAND_MPVPE_PRED",
+        os.path.join(project_root, "mesh_pred"),
+    )
 
     mpvpe = compute_mpvpe(folder_gt, folder_pred)
     print(f"MPVPE: {mpvpe:.4f} units")

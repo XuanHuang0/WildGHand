@@ -38,6 +38,9 @@ from pytorch3d.renderer import DirectionalLights
 
 import torch
 
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+ASSET_ROOT = os.environ.get("WILDG_HAND_ASSET_ROOT", PROJECT_ROOT)
+
 def render_img(verts, faces,R,T, fx, fy, px, py, mask_path='mask.jpg',image_size=(256,256),device='cuda:2'):
 
     device = torch.device(device)
@@ -402,7 +405,10 @@ def render_handy2(verts_list, faces_list, uv_coords_list, texture_uv_list, R, T,
 #     return image, im_silhouette[0, ..., 3]
 
 
-dense_path='/home/huangx/processed_dataset/v_color.pkl'
+dense_path = os.environ.get(
+    "WILDG_HAND_DENSE_COLOR",
+    osp.join(ASSET_ROOT, "processed_dataset", "v_color.pkl"),
+)
 with open(dense_path, 'rb') as file:
     dense_coor = pickle.load(file)
 dense_coor = torch.from_numpy(dense_coor)
@@ -616,16 +622,27 @@ def save_obj(v, f, file_name='output.obj'):
 if __name__ == "__main__": 
     # mano layer
     # smplx_path = '/home/3DHandReconstruction2/smplx/models/'
-    smplx_path = '/data1/huangxuan/interhand/smplx/models/'
+    smplx_path = os.environ.get(
+        "WILDG_HAND_SMPLX_PATH",
+        osp.join(ASSET_ROOT, "smplx", "models"),
+    )
     mano_layer = {'right': smplx.create(smplx_path, 'mano', use_pca=False, is_rhand=True), 'left': smplx.create(smplx_path, 'mano', use_pca=False, is_rhand=False)}
-    vert_face=torch.load(os.path.join("/data4/huangx/KeypointNeRF/face.pth"))
+    vert_face = torch.load(
+        os.environ.get(
+            "WILDG_HAND_FACE_PTH",
+            osp.join(ASSET_ROOT, "face.pth"),
+        )
+    )
 
     # fix MANO shapedirs of the left hand bug (https://github.com/vchoutas/smplx/issues/48)
     if torch.sum(torch.abs(mano_layer['left'].shapedirs[:,0,:] - mano_layer['right'].shapedirs[:,0,:])) < 1:
         print('Fix shapedirs bug of MANO')
         mano_layer['left'].shapedirs[:,0,:] *= -1
                 
-    root_path = '/home/huangxuan_m2023/InterHand2.6M-my/data/InterHand2.6M/'
+    root_path = os.environ.get(
+        "WILDG_HAND_INTERHAND_ROOT",
+        osp.join(ASSET_ROOT, "InterHand2.6M"),
+    )
     img_root_path = osp.join(root_path, 'images')
     annot_root_path = osp.join(root_path, 'annotations')
     split='train'
@@ -714,9 +731,19 @@ if __name__ == "__main__":
         t = torch3d_T_colmap @ t
         
         vis_img=render_img_vis(mesh_i, vert_face, mesh_i_xy, mesh_i_z, R=R,T=t, fx=focal[0], fy=focal[1], px=princpt[0], py=princpt[1],image_size=(img_height, img_width))
-        os.makedirs('/home/huangxuan_m2023/KeypointNeRF/'+split+'/densepose/capture'+str(capture_id)+'/cam'+str(cam)+'/', exist_ok=True)
+        densepose_root = os.environ.get(
+            "WILDG_HAND_DENSEPOSE_OUT",
+            osp.join(ASSET_ROOT, "outputs", "densepose"),
+        )
+        densepose_dir = osp.join(
+            densepose_root,
+            split,
+            f'capture{capture_id}',
+            f'cam{cam}',
+        )
+        os.makedirs(densepose_dir, exist_ok=True)
         
         img,vis_img,trans = augmentation(img,vis_img,bbox)
-        mask_save_path='/home/huangxuan_m2023/KeypointNeRF/'+split+'/densepose/capture'+str(capture_id)+'/cam'+str(cam)+'/frame'+str(frame_idx)+'.jpg'
+        mask_save_path = osp.join(densepose_dir, f'frame{frame_idx}.jpg')
         cv2.imwrite(mask_save_path, vis_img)
         print(mask_save_path)

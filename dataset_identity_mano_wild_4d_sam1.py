@@ -182,7 +182,6 @@ class Dataset(torch.utils.data.Dataset):
             'wild_path',
             osp.join(PROJECT_ROOT, 'dataset', 'WildGHand', 'capture4_subsample4', 'output.pkl'),
         )
-        # with open('/home/huangx/Arbitrary-Hands-3D-Reconstruction-main/demos_outputs/magic_results_0.35/wild.pkl/magic_handwild_0.35.pkl', 'rb') as file:
         if isinstance(self.wild_path, list):
             self.data_wild_video = []
             for path  in self.wild_path:
@@ -1092,7 +1091,7 @@ class Dataset(torch.utils.data.Dataset):
         mesh_cam = np.dot(in_R, mesh.transpose(1,0)).transpose(1,0) + in_T.reshape(1,3)
         # joint_img = cam2pixel(mesh_cam, focal_s, princpt_s)[:, :2]
         # keypoint=draw_keypoints(input_img0*255, joint_img)
-        # cv2.imwrite('/home/huangx/TriplaneGaussian-main/huo/huo_'+str(index)+'.jpg',input_img0[...,[1,2,0]]*255)
+        # Debug image export can be added here if needed.
         # print('vert_intag.jpg')
         # if idx == 1:
         

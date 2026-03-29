@@ -302,7 +302,7 @@ def points_projection_my(points: Float[Tensor, "B Np 3"],
 
     # input_rbg = local_features[0].permute(1,2,0).detach().cpu().numpy()*255
     # print(input_rbg.shape)
-    # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up/input.jpg", input_rbg[...,[2,1,0]])
+    # Debug image export can be added here if needed.
         
 
     B, C, H, W = local_features.shape
@@ -380,7 +380,7 @@ def points_projection_fs(points: Float[Tensor, "B Np 3"],
 
     # input_rbg = local_features[0].permute(1,2,0).detach().cpu().numpy()*255
     # print(input_rbg.shape)
-    # cv2.imwrite("/home/huangx/TriplaneGaussian-main/TriplaneGaussian-main/ex_cj_up/input.jpg", input_rbg[...,[2,1,0]])
+    # Debug image export can be added here if needed.
         
 
     B, C, H, W = local_features.shape
