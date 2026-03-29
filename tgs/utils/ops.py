@@ -16,7 +16,7 @@ import cv2
 
 from tgs.utils.typing import *
 import trimesh
-from model_utils import feat_sample
+from wildghand.model_utils import feat_sample
 
 ValidScale = Union[Tuple[float, float], Num[Tensor, "2 D"]]
 
