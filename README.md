@@ -27,6 +27,15 @@ Use the dataset release instead:
 
 - Hugging Face dataset: `https://huggingface.co/datasets/XuanHuang0/WildGHand`
 
+The dataset has been published to Hugging Face and can be synchronized from the local `dataset/WildGHand` folder.
+
+Use the Hugging Face CLI to upload or download the dataset:
+
+```bash
+python -m huggingface_hub.commands.huggingface_cli login
+python -m huggingface_hub.commands.huggingface_cli upload --repo-id XuanHuang0/WildGHand --repo-type dataset dataset/WildGHand
+```
+
 Expected local path layout:
 
 ```text
