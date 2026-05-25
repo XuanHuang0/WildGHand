@@ -1,9 +1,9 @@
 {
     "out_dir":                      "./EXPERIMENTS",
     
-    "expname":                      "online_shade_mano_pose_wild_time_texture_4d_fenli_loss_mano_sam_res_lmask_magic_t_reg_sym_res1_sam1_vtreg_capture0_lr_c0_x_50_tw_tsp10_single",
+    "expname":                      "c0_single",
     "test_dst_name":                "all",
-    "pretrained_path":              "./checkpoints/0.ckpt",
+    "pretrained_path":              "./EXPERIMENTS/checkpoints/0.ckpt",
     "sam_checkpoint":               "./vit_h.pth",
     "asset_root":                   ".",
     "x_threshold":  3.0,
