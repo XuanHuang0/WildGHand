@@ -70,12 +70,6 @@ WildGHand/
 
 The default configs point to paths under `dataset/WildGHand/`.
 
-For preprocessing a new sequence, run:
-
-```bash
-bash scripts/process.sh dataset/WildGHand/capture10_subsample3/output.pkl
-```
-
 ## Pre-trained model
 
 Download the checkpoint bundle from [Hugging Face Models](https://huggingface.co/XuanHuang0/WildGHand-checkpoints/tree/main/EXPERIMENTS/checkpoints) and place it in the repository root:
