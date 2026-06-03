@@ -16,6 +16,7 @@ from tgs.utils.ops import scale_tensor
 from tgs.models.verts_refinement import vert_valid, vert_pos_refinement
 from tgs.models.inter_attn import inter_attn
 from tgs.models.self_attn import SelfAttn
+from omegaconf import OmegaConf
 
 from einops import rearrange, reduce
 import trimesh
@@ -182,8 +183,9 @@ class GSLayer(BaseModule):
     cfg: Config
 
     def configure(self, *args, **kwargs) -> None:
+        feature_channels = OmegaConf.to_container(self.cfg.feature_channels, resolve=True)
         self.out_layers = nn.ModuleList()
-        for key, out_ch in self.cfg.feature_channels.items():
+        for key, out_ch in feature_channels.items():
             if key == "shs" and self.cfg.use_rgb:
                 out_ch = 3
                 # self.shade_layer = nn.Linear(self.cfg.in_channels, 1)
@@ -203,7 +205,7 @@ class GSLayer(BaseModule):
             self.out_layers.append(layer)
 
         self.out_layers_shade = nn.ModuleList()
-        for key, out_ch in self.cfg.feature_channels.items():
+        for key, out_ch in feature_channels.items():
             if key == "shs" and self.cfg.use_rgb:
                 out_ch = 3
                 self.shade_layer = nn.Linear(self.cfg.in_channels, 1)
@@ -225,8 +227,9 @@ class GSLayer(BaseModule):
         self.time_weight_layer = nn.Linear(256, 1)
         nn.init.constant_(self.time_weight_layer.weight, 0)
         nn.init.constant_(self.time_weight_layer.bias, 0)
+        self.feature_channel_keys = list(feature_channels.keys())
         self.out_layers_time = nn.ModuleList()
-        for key, out_ch in self.cfg.feature_channels.items():
+        for key, out_ch in feature_channels.items():
             if key == "shs" and self.cfg.use_rgb:
                 out_ch = 3
             layer = nn.Linear(out_ch + 256, out_ch)
@@ -257,7 +260,7 @@ class GSLayer(BaseModule):
         total_params3 = sum(p.numel() for p in self.out_layers_time.parameters())
         total_params4 = sum(p.numel() for p in self.time_weight_layer.parameters())
         print('total_params3', total_params3, 'total_params4', total_params4)
-        for k, layer, layer_shade, layer_time in zip(self.cfg.feature_channels.keys(), self.out_layers, self.out_layers_shade, self.out_layers_time):
+        for k, layer, layer_shade, layer_time in zip(self.feature_channel_keys, self.out_layers, self.out_layers_shade, self.out_layers_time):
             v = layer(x)
             v_shade = layer_shade(x_shade)
             if self.cfg.pose_reg:

@@ -11,8 +11,8 @@ class DeformNetwork(nn.Module):
     def __init__(self, d_in, d_out, dims, feature_vector_size, multires, num_verts, verts=None, embedder=None, **kwargs):
         super(DeformNetwork, self).__init__()
 
-        dims = [d_in+feature_vector_size,] + dims + [d_out,]
-        self.feature_vector_size=feature_vector_size
+        dims = [d_in + feature_vector_size] + list(dims) + [d_out]
+        self.feature_vector_size = feature_vector_size
         self.embed_fn = None
         self.multires = multires
         if d_in==3 and multires > 0 and embedder is not None:

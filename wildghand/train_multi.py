@@ -2,6 +2,9 @@ import torch
 from dataclasses import dataclass, field
 from einops import rearrange
 import os
+import sys
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(PROJECT_ROOT, 'livehand'))
 from torch.utils.data import DataLoader
 import tgs
 from tgs.models.image_feature import ImageFeature
@@ -910,9 +913,9 @@ class HandLightningModule(pytorch_lightning.LightningModule):
         print('!!!!!!!!!!!!!!!!!!!!!!')
         print(self.pretrained_path)
         if self.pretrained_path not in [None, "None"]:
-            pretrained_model = torch.load(self.pretrained_path)
-            # print(pretrained_model['state_dict'].keys())
-            self.load_state_dict(pretrained_model['state_dict'], strict=False)
+            pretrained_model = torch.load(self.pretrained_path, map_location="cpu")
+            state_dict = pretrained_model.get("state_dict", pretrained_model)
+            self._load_matching_state_dict(state_dict)
             if "fine_tune" in cfg:
                 print("trainable!!!!!!!!!!!!!!!!!!!!!!!")
                 for name, param in self.model.named_parameters():
@@ -926,6 +929,29 @@ class HandLightningModule(pytorch_lightning.LightningModule):
             else:
                 print("all trainable")
         # self.load_state_dict(pretrained_model['state_dict'])
+
+    def _load_matching_state_dict(self, state_dict):
+        model_dict = self.state_dict()
+        filtered_dict = {
+            k: v
+            for k, v in state_dict.items()
+            if k in model_dict and v.shape == model_dict[k].shape
+        }
+        mismatched_keys = [
+            k
+            for k, v in state_dict.items()
+            if k in model_dict and (k not in filtered_dict)
+        ]
+        if filtered_dict:
+            self.load_state_dict(filtered_dict, strict=False)
+        print(
+            f"Loaded {len(filtered_dict)} matching pretrained params from {self.pretrained_path}"
+        )
+        if mismatched_keys:
+            print(
+                f"Skipped {len(mismatched_keys)} pretrained params with mismatched shapes: {mismatched_keys[:20]}"
+            )
+        return filtered_dict
 
     def configure_optimizers(self):
         opt_g=torch.optim.Adam(self.model.parameters(), lr=self.cfg['training'].get('lr', 1e-4))

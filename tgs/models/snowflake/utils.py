@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 # @Author: Peng Xiang
 
+import os
+import sys
 import types
 import torch
 import torch.nn.functional as F
 import numpy as np
 from torch import nn, einsum
+
+# Add local pointnet2_ops package if available
+_POINTNET2_OPS_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "pointnet2_ops_lib")
+)
+if _POINTNET2_OPS_PATH not in sys.path:
+    sys.path.insert(0, _POINTNET2_OPS_PATH)
+
 from pointnet2_ops.pointnet2_utils import furthest_point_sample, \
     gather_operation, ball_query, three_nn, three_interpolate, grouping_operation
 

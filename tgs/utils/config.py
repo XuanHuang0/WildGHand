@@ -5,21 +5,25 @@ from omegaconf import OmegaConf
 
 from tgs.utils.typing import *
 
-# ============ Register OmegaConf Recolvers ============= #
-OmegaConf.register_new_resolver(
+# ============ Register OmegaConf Resolvers ============= #
+register_resolver = getattr(OmegaConf, 'register_new_resolver', None)
+if register_resolver is None:
+    register_resolver = OmegaConf.register_resolver
+
+register_resolver(
     "calc_exp_lr_decay_rate", lambda factor, n: factor ** (1.0 / n)
 )
-OmegaConf.register_new_resolver("add", lambda a, b: a + b)
-OmegaConf.register_new_resolver("sub", lambda a, b: a - b)
-OmegaConf.register_new_resolver("mul", lambda a, b: a * b)
-OmegaConf.register_new_resolver("div", lambda a, b: a / b)
-OmegaConf.register_new_resolver("idiv", lambda a, b: a // b)
-OmegaConf.register_new_resolver("basename", lambda p: os.path.basename(p))
-OmegaConf.register_new_resolver("rmspace", lambda s, sub: s.replace(" ", sub))
-OmegaConf.register_new_resolver("tuple2", lambda s: [float(s), float(s)])
-OmegaConf.register_new_resolver("gt0", lambda s: s > 0)
-OmegaConf.register_new_resolver("not", lambda s: not s)
-OmegaConf.register_new_resolver("shsdim", lambda sh_degree: (sh_degree + 1) ** 2 * 3)
+register_resolver("add", lambda a, b: a + b)
+register_resolver("sub", lambda a, b: a - b)
+register_resolver("mul", lambda a, b: a * b)
+register_resolver("div", lambda a, b: a / b)
+register_resolver("idiv", lambda a, b: a // b)
+register_resolver("basename", lambda p: os.path.basename(p))
+register_resolver("rmspace", lambda s, sub: s.replace(" ", sub))
+register_resolver("tuple2", lambda s: [float(s), float(s)])
+register_resolver("gt0", lambda s: s > 0)
+register_resolver("not", lambda s: not s)
+register_resolver("shsdim", lambda sh_degree: (int(sh_degree) + 1) ** 2 * 3)
 # ======================================================= #
 
 # ============== Automatic Name Resolvers =============== #
@@ -53,7 +57,14 @@ def load_config(
         yaml_confs.append(conf)
     cli_conf = OmegaConf.from_cli(cli_args)
     cfg = OmegaConf.merge(*yaml_confs, cli_conf, kwargs)
-    OmegaConf.resolve(cfg)
+    try:
+        OmegaConf.resolve(cfg)
+    except AttributeError:
+        # Older OmegaConf versions may not have resolve; emulate by
+        # converting to primitive (resolved) container and recreating
+        # a DictConfig so downstream code still receives a DictConfig.
+        resolved = OmegaConf.to_container(cfg, resolve=True)
+        cfg = OmegaConf.create(resolved)
     assert isinstance(cfg, DictConfig)
     scfg: ExperimentConfig = parse_structured(ExperimentConfig, cfg)
 

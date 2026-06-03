@@ -13,10 +13,14 @@ venv/
 # Experiment outputs and logs
 EXPERIMENTS/
 outputs/
+vis/
+debug_mesh/
 *.log
 
 # Local datasets
 dataset/
+InterHand2.6M/
+processed_dataset/
 
 # Large checkpoints and model weights
 *.ckpt

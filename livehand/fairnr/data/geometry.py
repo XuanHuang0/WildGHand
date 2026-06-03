@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 import cv2
 
-from ...fairnr.data import data_utils as D
+from fairnr.data import data_utils as D
 try:
     from fairnr.clib._ext import build_octree
 except ImportError:

@@ -405,10 +405,19 @@ def render_handy2(verts_list, faces_list, uv_coords_list, texture_uv_list, R, T,
 #     return image, im_silhouette[0, ..., 3]
 
 
-dense_path = os.environ.get(
-    "WILDG_HAND_DENSE_COLOR",
-    osp.join(ASSET_ROOT, "processed_dataset", "v_color.pkl"),
-)
+dense_path = os.environ.get("WILDG_HAND_DENSE_COLOR")
+if dense_path is None:
+    candidate_paths = [
+        osp.join(ASSET_ROOT, "v_color.pkl"),
+        osp.join(ASSET_ROOT, "processed_dataset", "v_color.pkl"),
+    ]
+    for path in candidate_paths:
+        if osp.exists(path):
+            dense_path = path
+            break
+    else:
+        dense_path = candidate_paths[0]
+
 with open(dense_path, 'rb') as file:
     dense_coor = pickle.load(file)
 dense_coor = torch.from_numpy(dense_coor)

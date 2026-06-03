@@ -215,9 +215,9 @@ class Dataset(torch.utils.data.Dataset):
         vt_l[...,0]=0.5+vt_l[...,0]/2
         vt_l[...,1]=vt_l[...,1]/2
         vt=np.concatenate((vt_r,vt_l))
-        change_r = np.load(vanerf_path+"/change/change_r.npy")
-        change_l=np.load(vanerf_path+'/change/change_l.npy', allow_pickle=True)
-        face_left=np.load(vanerf_path+'/change/face_left.npy', allow_pickle=True)
+        change_r = np.load(vanerf_path+"/mano_uv/change/change_r.npy")
+        change_l=np.load(vanerf_path+'/mano_uv/change/change_l.npy', allow_pickle=True)
+        face_left=np.load(vanerf_path+'/mano_uv/change/face_left.npy', allow_pickle=True)
         ft_l = face_left
         return vt, ft_l, ft_r, change_r, change_l
 
